@@ -1,0 +1,7 @@
+{
+  "name": "Huawei AC Charger",
+  "content_in_root": false,
+  "render_readme": true,
+  "domains": ["huawei_ac_charger"],
+  "iot_class": "local_polling"
+}
