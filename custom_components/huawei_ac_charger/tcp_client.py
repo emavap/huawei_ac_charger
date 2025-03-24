@@ -17,6 +17,13 @@ class HuaweiTCPClient:
             self.reader, self.writer = await asyncio.open_connection(self.ip, self.port)
             self.connected = True
             _LOGGER.debug("Connected successfully to Huawei Charger")
+
+            # Send Huawei-specific initialization frame
+            init_frame = b'\x00\x00\x00\x00\x00\x06\x0b\x03\x90\xed\x00\x25'
+            self.writer.write(init_frame)
+            await self.writer.drain()
+            _LOGGER.debug("Sent Huawei handshake frame")
+
         except Exception as e:
             self.connected = False
             _LOGGER.error(f"Connection error: {e}")
