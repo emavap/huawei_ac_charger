@@ -17,7 +17,17 @@ class HuaweiTCPClient:
         async with self._lock:
             self.writer.write(request)
             await self.writer.drain()
-            response = await self.reader.read(1024)
+
+            # First, read exactly 7 bytes for MBAP header
+            header = await self.reader.readexactly(7)
+
+            # Extract the length from header bytes 4-5
+            length = int.from_bytes(header[4:6], 'big')
+
+            # Read exactly the 'length' bytes specified
+            body = await self.reader.readexactly(length)
+
+            response = header + body
             return response
 
     async def close(self):
