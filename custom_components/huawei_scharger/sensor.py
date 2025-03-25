@@ -1,12 +1,12 @@
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import UnitOfPower, UnitOfElectricPotential
-from pymodbus.client import ModbusTcpClient
-from pymodbus.framer.rtu_framer import ModbusRtuFramer
+from homeassistant.const import POWER_WATT, ELECTRIC_POTENTIAL_VOLT
+from pymodbus.client.sync import ModbusTcpClient
+from pymodbus.framer.rtu_framer import FramerRTU
 from .const import DOMAIN, CONF_HOST, CONF_PORT, CONF_DEBUG, UNIT_ID
 
 SENSORS = [
-    ("Charging Power", 32064, 2, UnitOfPower.WATT),
-    ("Charging Voltage", 32066, 1, UnitOfElectricPotential.VOLT),
+    ("Charging Power", 32064, 2, POWER_WATT),
+    ("Charging Voltage", 32066, 1, ELECTRIC_POTENTIAL_VOLT),
 ]
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -30,19 +30,19 @@ class HuaweiSChargerSensor(SensorEntity):
         self._port = port
         self._debug = debug
         self._attr_name = name
-        self._attr_native_unit_of_measurement = unit
-        self._attr_native_value = None
+        self._attr_unit_of_measurement = unit
+        self._state = None
 
     def update(self):
-        client = ModbusTcpClient(self._host, port=self._port, framer=ModbusRtuFramer)
+        client = ModbusTcpClient(self._host, port=self._port, framer=FramerRTU)
         client.connect()
         rr = client.read_holding_registers(self._register, self._count, unit=UNIT_ID)
         if not rr.isError():
-            if self._count == 2:
-                value = (rr.registers[0] << 16) + rr.registers[1]
-            else:
-                value = rr.registers[0]
-            self._attr_native_value = value
+            self._state = (rr.registers[0] << 16) + rr.registers[1] if self._count == 2 else rr.registers[0]
             if self._debug:
-                print(f"[HuaweiSCharger][DEBUG] {self._name}: {value}")
+                print(f"[HuaweiSCharger][DEBUG] {self._name}: {self._state}")
         client.close()
+
+    @property
+    def native_value(self):
+        return self._state
