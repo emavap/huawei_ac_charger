@@ -1,3 +1,4 @@
+from .modbus_rtu_tcp import build_rtu_frame, build_write_frame, send_rtu_tcp
 from homeassistant.components.number import NumberEntity
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -14,4 +15,4 @@ class HuaweiMaxChargingPower(NumberEntity):
 
     async def async_set_native_value(self, value):
         scaled_value = int(value * 10)
-        await self._client.write_registers(0x2000, scaled_value.to_bytes(4, 'big'))
+        await self._# client.write_registers(0x2000, scaled_value.to_bytes(4, 'big'))
