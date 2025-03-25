@@ -1,11 +1,12 @@
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import POWER_WATT
+from homeassistant.const import UnitOfPower, UnitOfElectricPotential
 from pymodbus.client import ModbusTcpClient
+from pymodbus.framer.rtu_framer import ModbusRtuFramer
 from .const import DOMAIN, CONF_HOST, CONF_PORT, CONF_DEBUG, UNIT_ID
 
 SENSORS = [
-    ("Charging Power", 32064, 2, POWER_WATT, "power"),
-    ("Charging Voltage", 32066, 1, "V", "voltage"),
+    ("Charging Power", 32064, 2, UnitOfPower.WATT),
+    ("Charging Voltage", 32066, 1, UnitOfElectricPotential.VOLT),
 ]
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -14,7 +15,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     port = entry.data[CONF_PORT]
     debug = entry.data.get(CONF_DEBUG, False)
 
-    for name, reg, count, unit, key in SENSORS:
+    for name, reg, count, unit in SENSORS:
         sensors.append(HuaweiSChargerSensor(name, reg, count, unit, host, port, debug))
 
     async_add_entities(sensors)
@@ -33,7 +34,7 @@ class HuaweiSChargerSensor(SensorEntity):
         self._attr_native_value = None
 
     def update(self):
-        client = ModbusTcpClient(self._host, port=self._port)
+        client = ModbusTcpClient(self._host, port=self._port, framer=ModbusRtuFramer)
         client.connect()
         rr = client.read_holding_registers(self._register, self._count, unit=UNIT_ID)
         if not rr.isError():

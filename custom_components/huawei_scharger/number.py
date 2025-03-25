@@ -1,5 +1,6 @@
 from homeassistant.components.number import NumberEntity
 from pymodbus.client import ModbusTcpClient
+from pymodbus.framer.rtu_framer import ModbusRtuFramer
 from .const import DOMAIN, CONF_HOST, CONF_PORT, CONF_DEBUG, UNIT_ID
 
 class HuaweiSChargerMaxCurrent(NumberEntity):
@@ -17,7 +18,7 @@ class HuaweiSChargerMaxCurrent(NumberEntity):
         self._attr_native_value = None
 
     def update(self):
-        client = ModbusTcpClient(self._host, port=self._port)
+        client = ModbusTcpClient(self._host, port=self._port, framer=ModbusRtuFramer)
         client.connect()
         rr = client.read_holding_registers(self._address, 1, unit=UNIT_ID)
         if not rr.isError():
@@ -28,7 +29,7 @@ class HuaweiSChargerMaxCurrent(NumberEntity):
 
     def set_native_value(self, value: float):
         scaled = int(value * 10)
-        client = ModbusTcpClient(self._host, port=self._port)
+        client = ModbusTcpClient(self._host, port=self._port, framer=ModbusRtuFramer)
         client.connect()
         client.write_register(self._address, scaled, unit=UNIT_ID)
         client.close()
@@ -37,6 +38,5 @@ async def async_setup_entry(hass, entry, async_add_entities):
     host = entry.data[CONF_HOST]
     port = entry.data[CONF_PORT]
     debug = entry.data.get(CONF_DEBUG, False)
-
     number = HuaweiSChargerMaxCurrent("Max Charging Current", 32003, host, port, debug)
     async_add_entities([number])
