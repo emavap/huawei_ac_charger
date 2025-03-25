@@ -1,25 +1,30 @@
-# Huawei SCharger Integration for Home Assistant
 
-This custom integration enables Home Assistant to communicate with Huawei SChargers using Modbus RTU over TCP.
+# Huawei AC Charger Home Assistant Integration
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+
+This integration provides full Modbus-TCP support for Huawei AC Chargers.
 
 ## Features
-- Enable/disable charging
-- Monitor charging power and voltage
-- Set max charging current
-- Works with FramerRTU-compatible pymodbus versions (e.g., 2.5.x)
-- Configurable via Home Assistant UI
+- Real-time monitoring of charger parameters (voltage, current, power).
+- Control charging state (standby, pause, resume).
+- Set maximum charging power.
+- Automatic Modbus TCP connection management.
 
 ## Installation
-
-### Manual
-1. Copy `custom_components/huawei_scharger` into your Home Assistant `config/custom_components` folder.
-2. Restart Home Assistant.
-
-### HACS (Recommended)
-1. In HACS, go to **Integrations → ⋮ → Custom repositories**
-2. Add your GitHub repo URL and select category "Integration"
-3. Search for "Huawei SCharger" and install
+Install easily via [HACS](https://hacs.xyz/) by adding this repository as a custom integration.
 
 ## Configuration
-1. Go to Home Assistant **Settings → Devices & Services**
-2. Add "Huawei SCharger" and enter the IP address, port, and enable debug if needed.
+Configure directly via Home Assistant integrations UI by entering the charger IP address and port (default 502).
+
+## Entities Created
+- Sensors for voltage, current, total power.
+- Number entity to control maximum charging power.
+- Select entity to control charging state.
+- Connection status binary sensor.
+
+## Contributions
+Contributions are welcome via pull requests or issues.
+
+## License
+MIT
