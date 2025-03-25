@@ -1,9 +1,10 @@
-
 {
-  "name": "Huawei AC Charger",
-  "content_in_root": false,
-  "render_readme": true,
-  "domains": ["huawei_ac_charger"],
-  "iot_class": "local_polling",
-  "homeassistant": "2023.1.0"
+  "name": "Huawei SCharger",
+  "domain": "huawei_scharger",
+  "documentation": "https://github.com/example/huawei_scharger",
+  "codeowners": ["@yourgithub"],
+  "requirements": [],
+  "version": "1.2.0",
+  "config_flow": true,
+  "iot_class": "local_polling"
 }
